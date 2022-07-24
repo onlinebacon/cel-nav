@@ -5,7 +5,7 @@ import { div } from '../support/dom-factory.js';
 const readings = [];
 
 const stringifyTime = (time, zone) => {
-	return time.toISOString();
+	return time.toISOString().replace('T', '\x20').replace(/\.\d+Z/, '\x20UTC');
 };
 
 const stringifyAngle = (angle) => AngleFormats.stringify(angle);
@@ -16,12 +16,13 @@ const field = (label, content) => div('info-line',
 	div('info-value', content),
 );
 
-const addReading = ({ body, time, zone, angle }) => {
+const addReading = ({ id, body, time, zone, angle }) => {
 	const reading = div('reading',
 		div('body-name', body),
 		field('Time', stringifyTime(time, zone)),
 		field(angle.type, stringifyAngle(angle.value)),
 	);
+	reading.setAttribute('reading-id', id);
 	document.querySelector('#readings').appendChild(reading);
 };
 

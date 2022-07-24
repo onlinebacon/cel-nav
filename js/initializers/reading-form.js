@@ -75,10 +75,12 @@ const initSubmit = (popup) => {
 				return [ name, value ];
 			}),
 		);
+		const zone = parseZone(data.zone);
 		const reading = {
 			body: data.body,
 			... (data.body.toLowerCase() === 'other' ? { ra: data.ra, dec: data.dec } : {}),
-			time: new Date(data.datetime + stringifyTimezone(parseZone(data.zone))),
+			time: new Date(data.datetime + stringifyTimezone(zone)),
+			zone,
 			angle: {
 				value: AngleFormats.parse(data.angle),
 				type: data['angle-type'],
