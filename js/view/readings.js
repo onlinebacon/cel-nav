@@ -16,9 +16,9 @@ const field = (label, content) => div('info-line',
 	div('info-value', content),
 );
 
-const addReading = ({ bodyName, time, zone, angle }) => {
+const addReading = ({ body, time, zone, angle }) => {
 	const reading = div('reading',
-		div('body-name', bodyName),
+		div('body-name', body),
 		field('Time', stringifyTime(time, zone)),
 		field(angle.type, stringifyAngle(angle.value)),
 	);

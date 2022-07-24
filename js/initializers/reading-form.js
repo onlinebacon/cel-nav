@@ -1,5 +1,7 @@
+import * as ReadingsRepo from '../repositories/readings-repository.js';
 import * as Popup from '../view/popup.js'
 import * as AngleTypes from '../lists/angle-types.js';
+import * as AngleFormats from '../support/angle-formats.js';
 import Bodies from '../lists/celestial-bodies.js';
 
 const divReadings = document.querySelector('#readings');
@@ -73,7 +75,17 @@ const initSubmit = (popup) => {
 				return [ name, value ];
 			}),
 		);
-		console.log(data);
+		const reading = {
+			body: data.body,
+			... (data.body.toLowerCase() === 'other' ? { ra: data.ra, dec: data.dec } : {}),
+			time: new Date(data.datetime + stringifyTimezone(parseZone(data.zone))),
+			angle: {
+				value: AngleFormats.parse(data.angle),
+				type: data['angle-type'],
+			},
+		};
+		Popup.close(popup);
+		ReadingsRepo.add(reading);
 	});
 };
 
