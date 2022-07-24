@@ -7,6 +7,13 @@
         </div>
     </div>
     <div class="field">
+        <div class="field-title">Right Ascension / Declination</div>
+        <div class="field-content">
+            <input type="text" name="ra" class="col-3" placeholder="Ra">
+            <input type="text" name="dec" class="col-3" placeholder="Dec">
+        </div>
+    </div>
+    <div class="field">
         <div class="field-title">Time</div>
         <div class="field-content">
             <input type="datetime-local" name="datetime" step="1" class="col-4">
@@ -19,6 +26,17 @@
         <div class="field-content">
             <input type="text" name="angle" class="col-3">
             <select name="angle-type" class="col-3"></select>
+        </div>
+    </div>
+    <div class="field">
+        <div class="field-title">Corrections</div>
+        <div class="field-content">
+            <input type="text" name="index" class="col-2" placeholder="Index error">
+            <input type="text" name="height" class="col-2" placeholder="Height of eye">
+            <select name="h-unit" class="col-2">
+                <option value="m">meters</option>
+                <option value="ft">feet</option>
+            </select>
         </div>
     </div>
     <div class="button-line">

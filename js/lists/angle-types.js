@@ -1,5 +1,5 @@
 export const ELEVATION = {
-    label: 'Alt. (elevation)',
+    label: 'Elevation (alt.)',
     short: 'Alt.',
 };
 
@@ -9,7 +9,7 @@ export const ZENITH = {
 };
 
 export const DOUBLE_ALT = {
-    label: 'Double alt.',
+    label: 'Double alt. (artificial horizon)',
     short: '2 Alt.',
 };
 
