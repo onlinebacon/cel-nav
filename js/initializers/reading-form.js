@@ -1,4 +1,5 @@
-import * as Popup from '../popup.js'
+import * as Popup from '../view/popup.js'
+import Bodies from '../listing/celestial-bodies.js';
 
 const divReadings = document.querySelector('#readings');
 const newButton = divReadings.querySelector('.new-button');
@@ -6,6 +7,13 @@ const newButton = divReadings.querySelector('.new-button');
 const getLocalTimezone = () => {
     return - new Date().getTimezoneOffset();
 };
+
+const celestialBodyListHTML = [
+    'Other',
+    ...Bodies.map(({ name }) => name),
+].map(name => {
+    return `<option value=${name}>${name}</option>`
+}).join('\n');
 
 const stringifyTimezone = (zone) => {
     const sign = zone >= 0 ? '+' : '-';
@@ -33,6 +41,8 @@ const parseZone = (zone) => {
 };
 
 const bindNewReadingForm = (popup) => {
+    const bodySelect = popup.querySelector('[name="body"]');
+    bodySelect.innerHTML = celestialBodyListHTML;
     const submit = popup.querySelector('.submit');
     const nowButton = popup.querySelector('.now');
     const dateTimeInput = popup.querySelector('[name="datetime"]');
@@ -62,7 +72,7 @@ const bindNewReadingForm = (popup) => {
 };
 
 newButton.addEventListener('click', async () => {
-    const res = await fetch('forms/new-reading.html');
+    const res = await fetch('forms/reading.html');
     const html = await res.text();
     const popup = Popup.open({ html });
     popup.querySelector('.delete').remove();

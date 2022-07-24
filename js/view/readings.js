@@ -1,6 +1,6 @@
-import * as AngleFormats from './support/angle-formats.js';
-import * as ReadingsRepo from './readings-repository.js';
-import { div } from './support/dom-factory.js';
+import * as AngleFormats from '../support/angle-formats.js';
+import * as ReadingsRepo from '../repositories/readings-repository.js';
+import { div } from '../support/dom-factory.js';
 
 const readings = [];
 

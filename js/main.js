@@ -1,1 +1,1 @@
-import './initializers/readings.js';
+import './initializers/reading-form.js';

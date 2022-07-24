@@ -1,4 +1,4 @@
-import { div, button } from './support/dom-factory.js';
+import { div, button } from '../support/dom-factory.js';
 
 const parsePixelSize = value => {
     return Number(value.replace('px', ''));
