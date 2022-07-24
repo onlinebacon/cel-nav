@@ -11,16 +11,16 @@
     <div class="field">
         <div class="field-title">Time</div>
         <div class="field-content">
-            <input type="datetime-local" step="1" class="col-4">
-            <input type="text" value="+00:00" class="col-1">
-            <input type="button" value="now" class="col-1">
+            <input type="datetime-local" name="datetime" step="1" class="col-4">
+            <input type="text" name="zone" value="+00:00" class="col-1">
+            <input type="button" value="now" class="col-1 now">
         </div>
     </div>
     <div class="field">
         <div class="field-title">Angle</div>
         <div class="field-content">
-            <input type="text" class="col-3">
-            <select class="col-3">
+            <input type="text" name="angle" class="col-3">
+            <select name="angle-type" class="col-3">
                 <option>Alt. (elevation)</option>
                 <option>Zenith</option>
                 <option>Double alt.</option>

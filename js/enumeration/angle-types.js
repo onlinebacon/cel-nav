@@ -10,7 +10,7 @@ export const ZENITH = {
 
 export const DOUBLE_ALT = {
     label: 'Double alt.',
-    short: '2 ✕ Alt.',
+    short: '2 Alt.',
 };
 
 export const list = [

@@ -14,7 +14,7 @@ class Format {
 
 export const formats = [
     new Format({
-        example: '-25.45',
+        example: '25.45°',
         regex: /^-?\d+(\.\d+)?(\s*°)?$/,
         parse: Number,
         stringify: value => value + '°',
