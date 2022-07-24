@@ -1,0 +1,35 @@
+<div class="form-title">New Reading</div>
+<div class="form-fields">
+    <div class="field">
+        <div class="field-title">Celestial body</div>
+        <div class="field-content">
+            <select name="body" class="col-6">
+                <option value="other">Other</option>
+            </select>
+        </div>
+    </div>
+    <div class="field">
+        <div class="field-title">Time</div>
+        <div class="field-content">
+            <input type="datetime-local" step="1" class="col-4">
+            <input type="text" value="+00:00" class="col-1">
+            <input type="button" value="now" class="col-1">
+        </div>
+    </div>
+    <div class="field">
+        <div class="field-title">Angle</div>
+        <div class="field-content">
+            <input type="text" class="col-3">
+            <select class="col-3">
+                <option>Alt. (elevation)</option>
+                <option>Zenith</option>
+                <option>Double alt.</option>
+                <option>Azimuth</option>
+            </select>
+        </div>
+    </div>
+    <div class="button-line">
+        <input type="button" value="Delete" class="delete">
+        <input type="button" value="Add" class="submit">
+    </div>
+</div>
