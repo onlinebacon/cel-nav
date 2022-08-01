@@ -1,35 +1,45 @@
 <div class="form-title">New Reading</div>
 <div class="form-fields">
-    <div class="field">
-        <div class="field-title">Celestial body</div>
-        <div class="field-content">
-            <select name="body" class="col-6"></select>
-        </div>
-    </div>
-    <div class="field">
-        <div class="field-title">Right Ascension / Declination</div>
-        <div class="field-content">
-            <input type="text" name="ra" class="col-3" placeholder="Ra">
-            <input type="text" name="dec" class="col-3" placeholder="Dec">
-        </div>
-    </div>
-    <div class="field">
-        <div class="field-title">Time</div>
-        <div class="field-content">
-            <input type="datetime-local" name="datetime" step="1" class="col-4">
-            <input type="text" name="zone" class="col-1">
-            <input type="button" value="Now" class="col-1 now">
-        </div>
-    </div>
-    <div class="field">
-        <div class="field-title">Angle</div>
-        <div class="field-content">
-            <input type="text" name="angle" class="col-3">
-            <select name="angle-type" class="col-3"></select>
-        </div>
-    </div>
-    <div class="button-line">
-        <input type="button" value="Delete" class="delete">
-        <input type="button" value="Add" class="submit">
-    </div>
+	<div class="field">
+		<div class="field-title">Celestial body</div>
+		<div class="field-content">
+			<select name="body" class="col-6"></select>
+		</div>
+	</div>
+	<div class="field">
+		<div class="field-title">Right Ascension / Declination</div>
+		<div class="field-content">
+			<input type="text" name="ra" class="col-3">
+			<input type="text" name="dec" class="col-3">
+		</div>
+	</div>
+	<div class="field">
+		<div class="field-title">Time</div>
+		<div class="field-content">
+			<input type="datetime-local" name="datetime" step="1" class="col-4">
+			<input type="text" name="zone" class="col-1">
+			<input type="button" value="Now" class="col-1 now">
+		</div>
+	</div>
+	<div class="field">
+		<div class="field-title">Angle</div>
+		<div class="field-content">
+			<input type="text" name="angle" class="col-3">
+			<select name="angle-type" class="col-3"></select>
+		</div>
+	</div>
+	<div class="field">
+		<div class="field-title">Height of Eye</div>
+		<div class="field-content">
+			<input type="text" name="height" class="col-4" placeholder="0">
+			<select name="height-unit" class="col-2">
+				<option value="m">Meters</option>
+				<option value="ft">Feet</option>
+			</select>
+		</div>
+	</div>
+	<div class="button-line">
+		<input type="button" value="Delete" class="delete">
+		<input type="button" value="Add" class="submit">
+	</div>
 </div>

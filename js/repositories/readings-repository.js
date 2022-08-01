@@ -1,7 +1,7 @@
 const readings = [];
 const eventHandlers = {
     add: [],
-    udpate: [],
+    update: [],
     remove: [],
 };
 let lastId = 0;
@@ -37,7 +37,7 @@ export const remove = (id) => {
     eventHandlers.remove.forEach(handler => handler({ ...reading }));
 };
 
-export const udpate = ({ id, ...data }) => {
+export const update = ({ id, ...data }) => {
     const reading = readings.find(reading => reading.id == id);
     if (reading === null) {
         throw new Error(`Reading id=${id} not found`);
@@ -45,7 +45,7 @@ export const udpate = ({ id, ...data }) => {
     const index = readings.indexOf(reading);
     const newReading = { id, ...reading, ...data };
     readings[index] = newReading;
-    eventHandlers.udpate.forEach(handler => handler({ ...newReading }));
+    eventHandlers.update.forEach(handler => handler({ ...newReading }));
 };
 
 export const on = (event, handler) => {

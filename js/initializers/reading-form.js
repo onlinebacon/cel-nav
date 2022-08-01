@@ -6,16 +6,13 @@ import Bodies from '../lists/celestial-bodies.js';
 
 const divReadings = document.querySelector('#readings');
 const newButton = divReadings.querySelector('.new-button');
-
-const getLocalTimezone = () => {
-	return - new Date().getTimezoneOffset();
-};
+let currentZone = - new Date().getTimezoneOffset()
 
 const celestialBodyListHTML = [
 	'Other',
 	...Bodies.map(({ name }) => name),
-].map(name => {
-	return `<option value=${name}>${name}</option>`
+].map((name, index) => {
+	return `<option value=${name}${index == 1 ? ' selected' : ''}>${name}</option>`
 }).join('\n');
 
 const angleTypesHTML = AngleTypes.list.map(({ label, short }) => {
@@ -31,7 +28,7 @@ const stringifyTimezone = (zone) => {
 };
 
 const parseZone = (zone) => {
-	zone = zone.trim();
+	zone = zone;
 	const neg = zone.startsWith('-');
 	zone = zone.replace(/^[+\-]\s*/, '');
 	const values = zone.split(/\s*:\s*/);
@@ -51,8 +48,8 @@ const initNowButton = (popup) => {
 	const nowButton = popup.querySelector('.now');
 	const zoneInput = popup.querySelector('[name="zone"]')
 	const dateTimeInput = popup.querySelector('[name="datetime"]');
-	zoneInput.value = stringifyTimezone(getLocalTimezone());
-	nowButton.addEventListener('click', () => {
+	zoneInput.value = stringifyTimezone(currentZone);
+	const setTimeToNow = () => {
 		const zone = parseZone(zoneInput.value);
 		const now = new Date();
 		const date = new Date(now*1 + zone*60*1000);
@@ -61,33 +58,39 @@ const initNowButton = (popup) => {
 			.replace(/[Z]/g, '\x20')
 			.replace(/\.\d+/, '')
 			.trim();
-	});
+	};
+	nowButton.addEventListener('click', setTimeToNow);
+	setTimeToNow();
 };
+
+const getFormData = (popup) => Object.fromEntries(
+	[ ...popup.querySelectorAll('[name]') ]
+		.map(input => [ input.getAttribute('name'), input.value.trim() ])
+);
 
 const initSubmit = (popup) => {
 	const submit = popup.querySelector('.submit');
-	const inputs = [ ...popup.querySelectorAll('[name]') ];
 	submit.addEventListener('click', () => {
-		const data = Object.fromEntries(
-			inputs.map(input => {
-				const name = input.getAttribute('name');
-				const value = input.value;
-				return [ name, value ];
-			}),
-		);
+		const valid = validateForm(popup);
+		if (!valid) {
+			return;
+		}
+		const data = getFormData(popup);
 		const zone = parseZone(data.zone);
+		let angleType = data['angle-type'];
+		let angle = AngleFormats.parse(data.angle);
 		const reading = {
 			body: data.body,
 			... (data.body.toLowerCase() === 'other' ? { ra: data.ra, dec: data.dec } : {}),
 			time: new Date(data.datetime + stringifyTimezone(zone)),
 			zone,
-			angle: {
-				value: AngleFormats.parse(data.angle),
-				type: data['angle-type'],
-			},
+			angle: { value: angle, type: angleType },
+			height: angleType == AngleTypes.ELEVATION.short ? AngleFormats.parse(data.height || '0') : null,
+			hUnit: data['height-unit'],
 		};
 		Popup.close(popup);
 		ReadingsRepo.add(reading);
+		currentZone = reading.zone;
 	});
 };
 
@@ -110,11 +113,21 @@ const initBodySelect = (popup) => {
 			radecField.style.display = 'none';
 		}
 	};
+	radecField.style.display = 'none';
 };
 
 const initAngleTypeSelect = (popup) => {
 	const select = popup.querySelector('[name="angle-type"]');
+	const heightField = getFieldDiv(popup.querySelector('[name="height"]'));
 	select.innerHTML = angleTypesHTML;
+	select.oninput = () => {
+		const { value } = select;
+		if (AngleTypes.ELEVATION.short === value) {
+			heightField.style.display = 'block';
+		} else {
+			heightField.style.display = 'none';
+		}
+	};
 };
 
 const initNewReadingForm = (popup) => {
@@ -124,10 +137,51 @@ const initNewReadingForm = (popup) => {
 	initAngleTypeSelect(popup);
 };
 
-newButton.addEventListener('click', async () => {
+const openNewReadingForm = async () => {
 	const res = await fetch('forms/reading.html');
 	const html = await res.text();
 	const popup = Popup.open({ html });
 	popup.querySelector('.delete').remove();
 	initNewReadingForm(popup);
-});
+};
+
+const validateForm = (popup) => {
+	let data = getFormData(popup);
+	let body = data.body.toLowerCase();
+	let { ra, dec, angle } = data;
+	if (body === 'other') {
+		if (!ra) {
+			alert('You need to input a right ascension');
+			return false;
+		}
+		ra = AngleFormats.parse(ra);
+		if (ra == null) {
+			alert('Invalid right ascension format');
+			return false
+		}
+		if (!dec) {
+			alert('You need to input a declination');
+			return false;
+		}
+		dec = AngleFormats.parse(dec);
+		if (dec == null) {
+			alert('Invalid declination format');
+			return false
+		}
+	} else {
+		ra = null;
+		dec = null;
+	}
+	if (!angle) {
+		alert('You need to input an angle');
+		return false;
+	}
+	angle = AngleFormats.parse(angle);
+	if (angle == null) {
+		alert('Invalid angle format');
+		return false;
+	}
+	return true;
+};
+
+newButton.addEventListener('click', openNewReadingForm);

@@ -1,9 +1,17 @@
 body {
 	--field-col-size: 52px;
 	--field-col-spacing: 7px;
-	--readings-width: 350px;
+	--readings-width: 280px;
 	background-color: #222;
 	font-family: monospace;
+}
+#main {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	left: var(--readings-width);
+	overflow: auto;
 }
 #readings {
 	position: absolute;
@@ -173,4 +181,22 @@ input[type="button"] {
 }
 input[type="datetime-local"] {
 	color-scheme: dark;
+}
+.panel:first-child {
+	margin-top: 50px;
+}
+.panel {
+	width: 800px;
+	margin: 10px auto;
+	background-color: #151515;
+}
+.panel-title {
+	background-color: #111;
+	padding-top: 6px;
+	padding-left: 10px;
+	color: #ccc;
+	height: 24px;
+}
+.panel-content {
+	min-height: 200px;
 }
