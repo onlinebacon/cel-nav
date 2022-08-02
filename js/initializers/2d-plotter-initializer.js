@@ -1,5 +1,5 @@
-import * as Plotter from '../canvas-plotting/2d-plotter.js';
-import * as Projections from '../canvas-plotting/projections.js';
+import * as Plotter from '../canvas/2d-plotter.js';
+import * as Projections from '../canvas/projections.js';
 
 const canvas = Plotter.getCanvas();
 const [ projection ] = Projections.list();
