@@ -1,5 +1,5 @@
 import * as ReadingsRepo from '../repositories/readings-repository.js';
-import * as Popup from '../view/popup.js'
+import * as Popup from '../web-controllers/popup.js'
 import * as AngleTypes from '../lists/angle-types.js';
 import * as AngleFormats from '../support/angle-formats.js';
 import Bodies from '../lists/celestial-bodies.js';

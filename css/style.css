@@ -2,7 +2,7 @@ body {
 	--field-col-size: 52px;
 	--field-col-spacing: 7px;
 	--readings-width: 280px;
-	background-color: #222;
+	background-color: #1c1e20;
 	font-family: monospace;
 }
 #main {
@@ -187,7 +187,7 @@ input[type="datetime-local"] {
 }
 .panel {
 	width: 800px;
-	margin: 10px auto;
+	margin: 26px auto;
 	background-color: #151515;
 }
 .panel-title {
@@ -197,6 +197,10 @@ input[type="datetime-local"] {
 	color: #ccc;
 	height: 24px;
 }
-.panel-content {
-	min-height: 200px;
+#logs {
+	padding: 10px 13px;
+	overflow: auto;
+	height: 150px;
+	color: #aaa;
+	font-family: monospace;
 }
