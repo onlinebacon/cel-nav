@@ -1,4 +1,4 @@
-const domFactory = (tagname, classAttr, ...content) => {
+export const domFactory = (tagname, classAttr, ...content) => {
     const dom = document.createElement(tagname);
     if (classAttr) {
         dom.setAttribute('class', classAttr);

@@ -4,6 +4,7 @@ import * as Skyfield from '../data-sources/skyfield.js';
 import * as Plotter from '../canvas/2d-plotter.js';
 import * as AngleTypes from '../lists/angle-types.js';
 import * as HourAngleFormats from '../support/format/hour-angle.js';
+import * as AngleFormats from '../support/format/angle.js';
 import calcAriesGHA from './calc-aries-gha.js';
 import { getIntersections } from '../math/small-circles.js';
 
@@ -29,15 +30,19 @@ const preventDoubleThread = async (promise) => {
     return res;
 };
 
+const stringifyRaDec = (ra, dec) => `${
+    HourAngleFormats.stringify(ra)
+}/${
+    AngleFormats.stringify(dec)
+}`;
+
 const fetchRaDec = async ({ time, body, ra, dec }) => {
     if (ra != null) {
-        Log.writeln(`Using Ra/Dec provided for ${body}`);
+        Log.writeln(`Using Ra/Dec provided: ${stringifyRaDec(ra, dec)}`);
         return { ra, dec };
     }
     const data = await preventDoubleThread(Skyfield.fetchData(body, time));
-    Log.writeln(`Ra/Dec found for ${body} was: ${
-        HourAngleFormats.stringify(data.ra)
-    }/${data.dec}`);
+    Log.writeln(`Ra/Dec found: ${stringifyRaDec(data.ra, data.dec)}`);
     return data;
 };
 
@@ -45,14 +50,23 @@ const getLongitudeInsideLimits = (lon) => {
     return (lon % 360 + 360 + 180) % 360 - 180;
 };
 
+const stringifyGP = (lat, lon) => {
+    const latSign = lat < 0 ? 'S' : 'N';
+    const lonSign = lon < 0 ? 'W' : 'E';
+    [ lat, lon ] = [ lat, lon ].map(val => {
+        return AngleFormats.stringify(Math.abs(val));
+    });
+    return `${lat} ${latSign}, ${lon} ${lonSign}`;
+};
+
 const calcReading = async (reading) => {
     const ariesGHA = calcAriesGHA(reading.time);
-    Log.writeln(`GHA of aries: ${ariesGHA}`);
+    Log.writeln(`GHA of aries: ${AngleFormats.stringify(ariesGHA)}`);
 
     const { ra, dec } = await preventDoubleThread(fetchRaDec(reading));
     let lon = getLongitudeInsideLimits(ra/24*360 - ariesGHA);
     let lat = dec;
-    Log.writeln(`GP for ${reading.body} is ${lat}, ${lon}`);
+    Log.writeln(`GP for ${reading.body} is ${stringifyGP(lat, lon)}`);
 
     let { angle } = reading;
     let rad = null;
@@ -84,8 +98,11 @@ export const run = async () => {
             if (i != 0) {
                 Log.writeln('');
             }
-            Log.writeln(`Running reading number ${i + 1}`);
-            await preventDoubleThread(calcReading(readings[i]));
+            const reading = readings[i];
+            const { body } = reading;
+            const prefix = /^(sun|moon)$/i.test(body) ? 'the ' : '';
+            Log.writeln(`Running reading of ${prefix + body}`);
+            await preventDoubleThread(calcReading(reading));
         }
     } catch(error) {
         if (!(error instanceof InterruptedThreadError)) {

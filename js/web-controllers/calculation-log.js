@@ -1,4 +1,4 @@
-import { div } from '../support/dom-factory.js';
+import { domFactory, div } from '../support/dom-factory.js';
 
 const logs = document.querySelector('#logs');
 
@@ -7,7 +7,11 @@ export const clear = () => {
 };
 
 export const writeln = (text) => {
-    const line = div('log-line');
-    line.innerText = text;
-    logs.appendChild(line);
+    if (!text.trim()) {
+        logs.appendChild(domFactory('br'));
+    } else {
+        const line = div('log-line');
+        line.innerText = text;
+        logs.appendChild(line);
+    }
 };

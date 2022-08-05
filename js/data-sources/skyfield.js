@@ -1,6 +1,7 @@
 import * as Cache from '../support/cache.js';
 
-const baseUrl = 'https://skilltrek.com/';
+// const baseUrl = ''; /*
+const baseUrl = 'https://skilltrek.com'; // */
 
 export const fetchData = (name, time) => Cache.get(
     `skyfield:${name}:${time.toISOString()}`,
