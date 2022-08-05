@@ -1,7 +1,8 @@
 import * as ReadingsRepo from '../repositories/readings-repository.js';
 import * as Popup from '../web-controllers/popup.js'
 import * as AngleTypes from '../lists/angle-types.js';
-import * as AngleFormats from '../support/angle-formats.js';
+import * as AngleFormats from '../support/format/angle.js';
+import * as HourAngleFormats from '../support/format/hour-angle.js';
 import Bodies from '../lists/celestial-bodies.js';
 
 const divReadings = document.querySelector('#readings');
@@ -81,7 +82,10 @@ const initSubmit = (popup) => {
 		let angle = AngleFormats.parse(data.angle);
 		const reading = {
 			body: data.body,
-			... (data.body.toLowerCase() === 'other' ? { ra: data.ra, dec: data.dec } : {}),
+			... (data.body.toLowerCase() === 'other' ? {
+				ra: HourAngleFormats.parse(data.ra),
+				dec: AngleFormats.parse(data.dec),
+			} : {}),
 			time: new Date(data.datetime + stringifyTimezone(zone)),
 			zone,
 			angle: { value: angle, type: angleType },
@@ -154,7 +158,7 @@ const validateForm = (popup) => {
 			alert('You need to input a right ascension');
 			return false;
 		}
-		ra = AngleFormats.parse(ra);
+		ra = HourAngleFormats.parse(ra);
 		if (ra == null) {
 			alert('Invalid right ascension format');
 			return false

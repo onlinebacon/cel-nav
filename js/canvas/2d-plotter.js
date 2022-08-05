@@ -4,7 +4,11 @@ import { SmallCircleBuilder } from '../math/small-circles.js';
 
 const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d');
+const backgroundColor = '#445';
+const continentAlpha = 0.2;
+const smallCircleWidth = 1;
 const smallCircleColor = '#fff';
+const intersectionColor = '#fff';
 const smallCircles = [];
 const points = [];
 
@@ -46,7 +50,7 @@ const drawPointList = (first) => {
 	ctx.stroke();
 };
 
-const drawSmallCircle = ([ lat, lon, rad ]) => {
+const drawSmallCircle = ([ lat, lon, rad, label ]) => {
 	const n = 360;
 	const builder = new SmallCircleBuilder(lat, lon, rad);
 	let head = null;
@@ -64,19 +68,24 @@ const drawSmallCircle = ([ lat, lon, rad ]) => {
 			foot = item;
 		}
 	}
-	ctx.lineWidth = 1;
+	ctx.lineWidth = smallCircleWidth;
 	ctx.strokeStyle = smallCircleColor;
 	drawPointList(foot, head);
 	const [ x, y ] = project([ lat, lon ]);
-	ctx.fillStyle = '#fff';
+	ctx.fillStyle = smallCircleColor;
 	ctx.beginPath();
-	ctx.arc(x, y, 2, 0, Math.PI*2);
+	ctx.arc(x, y, 3, 0, Math.PI*2);
 	ctx.fill();
+	if (label) {
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'bottom';
+		ctx.fillText(label, x, y - 10);
+	}
 };
 
 const drawPoint = (latlon) => {
 	const [ x, y ] = project(latlon);
-	ctx.fillStyle = '#fc0';
+	ctx.fillStyle = intersectionColor;
 	ctx.beginPath();
 	ctx.arc(x, y, 2, 0, Math.PI*2);
 	ctx.fill();
@@ -88,9 +97,9 @@ export const setProjection = arg => {
 
 export const update = async () => {
 	const img = await getImage(projection.imageUrl);
-	ctx.fillStyle = '#445';
+	ctx.fillStyle = backgroundColor;
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
-	ctx.globalAlpha = 0.3;
+	ctx.globalAlpha = continentAlpha;
 	ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 	ctx.globalAlpha = 1;
 	smallCircles.forEach(drawSmallCircle);
@@ -111,10 +120,10 @@ export const clear = () => {
 	points.length = 0;
 };
 
-export const addSmallCircle = (lat, lon, rad) => {
-	smallCircles.push([ lat, lon, rad ]);
+export const addSmallCircle = (lat, lon, rad, label) => {
+	smallCircles.push([ lat, lon, rad, label ]);
 };
 
-export const addPoint = (lat, lon, rad) => {
-	points.push([ lat, lon, rad ]);
+export const addPoint = (lat, lon) => {
+	points.push([ lat, lon ]);
 };

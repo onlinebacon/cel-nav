@@ -7,7 +7,16 @@ export const vecToLatlon = ([ x, y, z ]) => {
     return [ lat, Math.acos(z/r)*(x < 0 ? -1 : 1) ];
 };
 
-export const buildLatlonMat3 = (lat, lon) => {
+export const latLonToVec = ([ lat, lon ]) => {
+	const cosLat = Math.cos(lat);
+	return [
+		Math.sin(lon)*cosLat,
+		Math.sin(lat),
+		Math.cos(lon)*cosLat,
+	];
+};
+
+export const buildLatlonMat3 = ([ lat, lon ]) => {
 	const sinLat = Math.sin(lat);
 	const cosLat = Math.cos(lat);
 	const sinLon = Math.sin(lon);

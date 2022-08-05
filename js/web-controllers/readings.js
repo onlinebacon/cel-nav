@@ -1,4 +1,4 @@
-import * as AngleFormats from '../support/angle-formats.js';
+import * as AngleFormats from '../support/format/angle.js';
 import * as ReadingsRepo from '../repositories/readings-repository.js';
 import { div } from '../support/dom-factory.js';
 
