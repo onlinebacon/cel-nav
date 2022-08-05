@@ -6,3 +6,4 @@ import * as FixEngine from './calculation/fix-engine.js';
 import * as Readings from './repositories/readings-repository.js';
 
 Readings.on('add', () => FixEngine.run());
+Readings.on('remove', () => FixEngine.run());

@@ -45,21 +45,23 @@ const parseZone = (zone) => {
 	return Math.round(hours*60)*(neg ? -1 : 1);
 };
 
+const setTime = (popup, time, zone) => {
+	const zoneInput = popup.querySelector('[name="zone"]')
+	const dateTimeInput = popup.querySelector('[name="datetime"]');
+	const date = new Date(time*1 + zone*60*1000);
+	zoneInput.value = stringifyTimezone(zone);
+	dateTimeInput.value = date
+		.toISOString()
+		.replace(/[Z]/g, '\x20')
+		.replace(/\.\d+/, '')
+		.trim();
+};
+
 const initNowButton = (popup) => {
 	const nowButton = popup.querySelector('.now');
 	const zoneInput = popup.querySelector('[name="zone"]')
-	const dateTimeInput = popup.querySelector('[name="datetime"]');
 	zoneInput.value = stringifyTimezone(currentZone);
-	const setTimeToNow = () => {
-		const zone = parseZone(zoneInput.value);
-		const now = new Date();
-		const date = new Date(now*1 + zone*60*1000);
-		dateTimeInput.value = date
-			.toISOString()
-			.replace(/[Z]/g, '\x20')
-			.replace(/\.\d+/, '')
-			.trim();
-	};
+	const setTimeToNow = () => setTime(popup, new Date(), currentZone);
 	nowButton.addEventListener('click', setTimeToNow);
 	setTimeToNow();
 };
@@ -134,19 +136,44 @@ const initAngleTypeSelect = (popup) => {
 	};
 };
 
-const initNewReadingForm = (popup) => {
-	initNowButton(popup);
-	initSubmit(popup);
-	initBodySelect(popup);
-	initAngleTypeSelect(popup);
+const initDeleteButton = (popup, { id }) => {
+	const button = popup.querySelector('.delete');
+	button.addEventListener('click', () => {
+		Popup.close(popup);
+		ReadingsRepo.remove(id);
+	});
 };
 
-const openNewReadingForm = async () => {
+const initNewReadingForm = (popup) => {
+	initSubmit(popup);
+	popup.querySelector('.delete').remove();
+};
+
+const initEditReadingForm = (popup, reading) => {
+	popup.querySelector('.submit').value = 'Update';
+	setTime(popup, reading.time, reading.zone);
+	initDeleteButton(popup, reading);
+};
+
+const openReadingForm = async () => {
 	const res = await fetch('forms/reading.html');
 	const html = await res.text();
 	const popup = Popup.open({ html });
-	popup.querySelector('.delete').remove();
+	initNowButton(popup);
+	initBodySelect(popup);
+	initAngleTypeSelect(popup);
+	return popup;
+};
+
+const openNewReadingForm = async () => {
+	const popup = await openReadingForm();
 	initNewReadingForm(popup);
+};
+
+const openEditReadingForm = async (id) => {
+	const popup = await openReadingForm();
+	const reading = ReadingsRepo.get(id);
+	initEditReadingForm(popup, reading);
 };
 
 const validateForm = (popup) => {
@@ -188,4 +215,21 @@ const validateForm = (popup) => {
 	return true;
 };
 
+const getReadingId = (element) => {
+	while (element && !element.matches('[reading-id]')) {
+		element = element.parentElement;
+	}
+	if (element) {
+		return element.getAttribute('reading-id')*1;
+	}
+	return null;
+};
+
 newButton.addEventListener('click', openNewReadingForm);
+divReadings.addEventListener('click', ({ target }) => {
+	const id = getReadingId(target);
+	if (id == null) {
+		return;
+	}
+	openEditReadingForm(id);
+});

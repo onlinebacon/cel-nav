@@ -1,6 +1,6 @@
 import * as Cache from '../support/cache.js';
 
-// const baseUrl = ''; /*
+const baseUrl = ''; /*
 const baseUrl = 'https://skilltrek.com'; // */
 
 export const fetchData = (name, time) => Cache.get(

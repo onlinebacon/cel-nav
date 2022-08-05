@@ -28,4 +28,9 @@ const addReading = ({ id, body, time, zone, angle, height, hUnit }) => {
 	document.querySelector('#readings').appendChild(reading);
 };
 
+const removeReading = ({ id }) => {
+	document.querySelector(`[reading-id="${id}"]`).remove();
+};
+
 ReadingsRepo.on('add', addReading);
+ReadingsRepo.on('remove', removeReading);
