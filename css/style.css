@@ -1,7 +1,7 @@
 body {
 	--field-col-size: 52px;
 	--field-col-spacing: 7px;
-	--readings-width: 250px;
+	--readings-width: 285px;
 	background-color: #1c1e20;
 	font-family: monospace;
 }
@@ -49,9 +49,10 @@ body {
 .reading {
 	color: #ccc;
 	margin: 5px 5px 0px 5px;
-	padding: 7px;
+	padding: 7px 0px 7px 7px;
 	border-radius: 5px;
 	transition: background-color 0.2s;
+	font-size: 12px;
 }
 .reading:hover {
 	cursor: pointer;

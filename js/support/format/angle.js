@@ -8,7 +8,7 @@ const formats = [
 			const sign = value.startsWith('-') ? -1 : 1;
 			value = value.replace(/[+\-]\s*/, '');
 			const [ d, m ] = value.split(/[\s°']+/).map(Number);
-			return d + m/60;
+			return (d + m/60)*sign;
 		},
 		stringify: (value) => {
 			const prefix = value < 0 ? '-' : '';

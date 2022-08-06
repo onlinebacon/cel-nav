@@ -5,6 +5,7 @@ const eventHandlers = {
     remove: [],
 };
 let lastId = 0;
+window.readings = readings;
 
 const store = () => {
     localStorage.setItem('readings', JSON.stringify(readings));
@@ -14,17 +15,26 @@ const load = () => {
     const json = localStorage.getItem('readings') || '[]';
     const array = JSON.parse(json);
     readings.length = 0;
-    array.forEach(add);
+    array.forEach(addWithoutStoring);
 };
 
-export const add = (data) => {
-    const id = ++lastId;
+const addWithoutStoring = (data) => {
+    let id = ++lastId;
+    if (data.id != null) {
+        id = data.id;
+        lastId = Math.max(lastId, id);
+    }
     const reading = { id, ...data };
     if (typeof reading.time === 'string') {
         reading.time = new Date(reading.time);
     }
     readings.push(reading);
     eventHandlers.add.forEach(handler => handler({ ...reading }));
+    return reading;
+};
+
+export const add = (data) => {
+    const reading = addWithoutStoring(data);
     store();
     return reading;
 };

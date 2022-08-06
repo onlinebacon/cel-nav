@@ -6,7 +6,7 @@ const formats = [
 		regex: /\d\d?(\s*h\s*|\s)\d\d?(\s*m\s*|\s)(\d\d(\.\d+(\s*s\s*)?)?)?/,
 		parse: (text) => {
 			const [ h, m = 0, s = 0 ] = text
-				.split(/^\s*[hms]\s*/)
+				.split(/\s*[hms]\s*|\s/)
 				.map(Number);
 			return h + m/60 + s/(60*60);
 		},

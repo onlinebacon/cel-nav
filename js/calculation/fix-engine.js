@@ -32,7 +32,7 @@ const preventDoubleThread = async (promise) => {
 
 const stringifyRaDec = (ra, dec) => `${
     HourAngleFormats.stringify(ra)
-}/${
+} / ${
     AngleFormats.stringify(dec)
 }`;
 
@@ -84,9 +84,7 @@ const calcReading = async (reading) => {
         intersections.forEach(point => Plotter.addPoint(...point));
     }
     smallCircles.push(circle);
-    
     Plotter.addSmallCircle(...circle, reading.body);
-    Plotter.update();
 };
 
 export const run = async () => {
@@ -109,4 +107,5 @@ export const run = async () => {
             throw error;
         }
     }
+    Plotter.update();
 };
