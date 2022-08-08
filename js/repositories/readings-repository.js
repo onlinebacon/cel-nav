@@ -5,13 +5,12 @@ const eventHandlers = {
     remove: [],
 };
 let lastId = 0;
-window.readings = readings;
 
-const store = () => {
+export const store = () => {
     localStorage.setItem('readings', JSON.stringify(readings));
 };
 
-const load = () => {
+export const load = () => {
     const json = localStorage.getItem('readings') || '[]';
     const array = JSON.parse(json);
     readings.length = 0;
@@ -86,5 +85,3 @@ export const on = (event, handler) => {
         throw new Error(`Unrecognized event ${event}`);
     }
 };
-
-setTimeout(load, 0);

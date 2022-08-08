@@ -5,12 +5,16 @@ import * as Plotter from '../canvas/2d-plotter.js';
 import * as AngleTypes from '../lists/angle-types.js';
 import * as HourAngleFormats from '../support/format/hour-angle.js';
 import * as AngleFormats from '../support/format/angle.js';
+import * as Refraction from './refraction.js';
+import * as Dip from './dip.js';
+import * as Parallax from './parallax.js';
 import calcAriesGHA from './calc-aries-gha.js';
 import { getIntersections } from '../math/small-circles.js';
 
 class InterruptedThreadError extends Error {}
 
 const toRad = (deg) => deg/180*Math.PI;
+const toDeg = (rad) => rad*180/Math.PI;
 const smallCircles = [];
 
 let fixId = 0;
@@ -36,10 +40,10 @@ const stringifyRaDec = (ra, dec) => `${
     AngleFormats.stringify(dec)
 }`;
 
-const fetchRaDec = async ({ time, body, ra, dec }) => {
+const fetchRaDecDist = async ({ time, body, ra, dec }) => {
     if (ra != null) {
         Log.writeln(`Using Ra/Dec provided: ${stringifyRaDec(ra, dec)}`);
-        return { ra, dec };
+        return { ra, dec, dist: null };
     }
     const data = await preventDoubleThread(Skyfield.fetchData(body, time));
     Log.writeln(`Ra/Dec found: ${stringifyRaDec(data.ra, data.dec)}`);
@@ -63,26 +67,37 @@ const calcReading = async (reading) => {
     const ariesGHA = calcAriesGHA(reading.time);
     Log.writeln(`GHA of aries: ${AngleFormats.stringify(ariesGHA)}`);
 
-    const { ra, dec } = await preventDoubleThread(fetchRaDec(reading));
+    const { ra, dec, dist } = await preventDoubleThread(fetchRaDecDist(reading));
     let lon = getLongitudeInsideLimits(ra/24*360 - ariesGHA);
     let lat = dec;
     Log.writeln(`GP for ${reading.body} is ${stringifyGP(lat, lon)}`);
 
     let { angle } = reading;
-    let rad = null;
-    switch (angle.type) {
-        case AngleTypes.ELEVATION.short:
-            rad = 90 - angle.value;
-        break;
+    let val = angle.value;
+    let rad;
+
+    if (angle.type === AngleTypes.ELEVATION.short) {
+        if (reading.height) {
+            const dip = Dip.of(reading.height, reading.hUnit);
+            Log.writeln(`Dip correction: ${AngleFormats.stringify(dip)}`);
+            val -= dip;
+        }
+        const ref = Refraction.forAlt(val);
+        Log.writeln(`Refracted amount: ${AngleFormats.stringify(ref)}`);
+        val -= ref;
+        if (dist != null) {
+            const parallax = Parallax.correctionFor(val, dist*1e3);
+            if (parallax >= 1/60) {
+                Log.writeln('Parallax correction: ' + AngleFormats.stringify(parallax));
+                val += parallax;
+            }
+        }
+        rad = 90 - val;
     }
 
     const circle = [ lat, lon, rad ].map(toRad);
-    Log.writeln(`Circle radius: ${rad}`);
+    Log.writeln(`Circle radius: ${AngleFormats.stringify(rad)}`);
     
-    for (let smallCircle of smallCircles) {
-        const intersections = getIntersections(smallCircle, circle);
-        intersections.forEach(point => Plotter.addPoint(...point));
-    }
     smallCircles.push(circle);
     Plotter.addSmallCircle(...circle, reading.body);
 };
@@ -105,6 +120,22 @@ export const run = async () => {
     } catch(error) {
         if (!(error instanceof InterruptedThreadError)) {
             throw error;
+        }
+    }
+    const intersections = [];
+    for (let i=1; i<smallCircles.length; ++i) {
+        const a = smallCircles[i];
+        for (let j=0; j<i; ++j) {
+            const b = smallCircles[j];
+            intersections.push(...getIntersections(a, b));
+        }
+    }
+    if (intersections.length) {
+        Log.writeln('');
+        Log.writeln('Intersections:');
+        for (let intersection of intersections) {
+            Log.writeln(`${stringifyGP(...intersection.map(toDeg))}`);
+            Plotter.addPoint(...intersection);
         }
     }
     Plotter.update();

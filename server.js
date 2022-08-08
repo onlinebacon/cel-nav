@@ -1,18 +1,47 @@
 const fs = require('fs');
+const crypto = require('crypto');
 const http = require('http');
 const path = require('path');
 const port = 80;
-const pipeSkyfield = async (req, res) => {
-    const cliReq = http.request('http://skilltrek.com:8080' + req.url, {
-        method: 'POST',
-        headers: req.headers,
-    }, cliRes => {
-        res.writeHead(cliRes.statusCode, cliRes.headers);
-        cliRes.on('data', data => res.write(data));
-        cliRes.on('end', () => res.end());
+const cache = {};
+const loadBody = (obj) => new Promise((done, fail) => {
+    const chunks = [];
+    obj.on('data', chunk => chunks.push(chunk));
+    obj.on('end', () => {
+        done(Buffer.concat(chunks));
     });
-    req.on('data', data => cliReq.write(data));
-    req.on('end', () => cliReq.end());
+});
+const hashBuffer = (buffer) => {
+    return crypto.createHash('sha256').update(buffer).digest().toString('hex').substring(0, 8);
+};
+const pipeSkyfield = async (req, res) => {
+    const body = await loadBody(req);
+    const hash = hashBuffer(body);
+    const item = cache[hash];
+    if (item !== undefined) {
+        res.writeHead(item.status, item.headers);
+        res.write(item.body);
+        res.end();
+        return;
+    }
+    const cliReq = http.request('http://skilltrek.com:8080' + req.url, {
+        method: req.method,
+        headers: req.headers,
+    }, async (cliRes) => {
+        const body = await loadBody(cliRes);
+        const status = cliRes.statusCode;
+        const headers = { ...cliRes.headers };
+        cache[hash] = {
+            body,
+            status,
+            headers,
+        };
+        res.writeHead(status, headers);
+        res.write(body);
+        res.end();
+    });
+    cliReq.write(body);
+    cliReq.end();
 };
 const mimeMap = {
     'html': 'text/html',

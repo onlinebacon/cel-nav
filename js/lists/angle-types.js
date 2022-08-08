@@ -15,6 +15,6 @@ export const DOUBLE_ALT = {
 
 export const list = [
     ELEVATION,
-    ZENITH,
-    DOUBLE_ALT,
+    // ZENITH,
+    // DOUBLE_ALT,
 ];

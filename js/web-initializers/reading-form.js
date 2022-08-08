@@ -8,13 +8,15 @@ import Bodies from '../lists/celestial-bodies.js';
 const divReadings = document.querySelector('#readings');
 const newButton = divReadings.querySelector('.new-button');
 let lastTimeAdded = null;
+let lastHeight = null;
+let lastHeightUnit = null;
 let currentZone = - new Date().getTimezoneOffset()
 
 const celestialBodyListHTML = [
 	'Other',
 	...Bodies.map(({ name }) => name),
 ].map((name, index) => {
-	return `<option value=${name}${index == 1 ? ' selected' : ''}>${name}</option>`
+	return `<option value="${name}"${index == 1 ? ' selected' : ''}>${name}</option>`
 }).join('\n');
 
 const angleTypesHTML = AngleTypes.list.map(({ label, short }) => {
@@ -104,6 +106,8 @@ const initAddButton = (popup) => {
 		const reading = parseForm(popup);
 		currentZone = reading.zone;
 		lastTimeAdded = reading.time;
+		lastHeight = reading.height;
+		lastHeightUnit = reading.hUnit;
 		Popup.close(popup);
 		ReadingsRepo.add(reading);
 	});
@@ -170,6 +174,10 @@ const initUpdateButton = (popup, { id }) => {
 
 const initNewReadingForm = (popup) => {
 	initAddButton(popup);
+	if (lastHeight != null) {
+		getInput(popup, 'height').value = lastHeight;
+		getInput(popup, 'height-unit').value = lastHeightUnit;
+	}
 	popup.querySelector('.delete').remove();
 	handleBodyUpdate(popup);
 };

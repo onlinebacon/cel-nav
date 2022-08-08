@@ -5,6 +5,8 @@ import './math/small-circles.js';
 import * as FixEngine from './calculation/fix-engine.js';
 import * as Readings from './repositories/readings-repository.js';
 
+Readings.load();
+FixEngine.run();
 Readings.on('add', () => FixEngine.run());
 Readings.on('remove', () => FixEngine.run());
 Readings.on('update', () => FixEngine.run());
